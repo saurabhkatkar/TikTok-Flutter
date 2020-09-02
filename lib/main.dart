@@ -12,23 +12,20 @@ class Main extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocProvider(
-      blocs: [
-        Bloc((i) => VideosBloc(VideosAPI())),
-      ],
-      child: 
-     MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-         // Uncomment in phase 3 to apply white to text
-        textTheme: Theme.of(context).textTheme.apply(
-          bodyColor: Colors.white,
-          displayColor: Colors.white
-        ),
-      ),
-      home: Home(),
-    )
-    );
+        blocs: [
+          Bloc((i) => VideosBloc(VideosAPI())),
+        ],
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            // Uncomment in phase 3 to apply white to text
+            textTheme: Theme.of(context)
+                .textTheme
+                .apply(bodyColor: Colors.white, displayColor: Colors.white),
+          ),
+          home: Home(),
+        ));
   }
 }

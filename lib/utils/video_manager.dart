@@ -16,11 +16,12 @@ class VideoManager {
 
   changeVideo(index) async {
     int prev = index > prevPage ? index - 2 : index + 2;
+    print("Preivous index to dispose is :  $prev  $index");
     listVideos[prevPage].controller.pause();
     prevPage = index;
+    await loadVideo(index);
 
     disposeVideo(prev);
-    await loadVideo(index);
     listVideos[index].controller.play();
     stream.add(listVideos);
   }
