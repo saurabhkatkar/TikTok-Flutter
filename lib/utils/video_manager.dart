@@ -6,22 +6,34 @@ import 'package:video_player/video_player.dart';
 class VideoManager {
   State<Home> state;
   Function updateController;
+  List<int> streamQ = [0, 1, 2];
 
   List<Video> listVideos;
-  var prevPage = 0;
 
   Sink<List<Video>> stream;
 
   VideoManager({this.stream});
 
-  changeVideo(index) async {
-    int prev = index > prevPage ? index - 2 : index + 2;
-    print("Preivous index to dispose is :  $prev  $index");
-    listVideos[prevPage].controller.pause();
-    prevPage = index;
+  changeVideo(index, prv, next) async {
+    if (streamQ.contains(prv) &&
+        streamQ.contains(index) &&
+        !streamQ.contains(next)) {
+      disposeVideo(streamQ[0]);
+      print("dispose 1");
+    } else if (!streamQ.contains(prv) &&
+        streamQ.contains(index) &&
+        streamQ.contains(next)) {
+      disposeVideo(streamQ[2]);
+      print("dispose 2");
+    }
+    streamQ = [prv, index, next];
+
+    print("Preivous index next is :  $prv  $index $next");
+    listVideos[prv]?.controller?.pause();
+    listVideos[next]?.controller?.pause();
+
     await loadVideo(index);
 
-    disposeVideo(prev);
     listVideos[index].controller.play();
     stream.add(listVideos);
   }
