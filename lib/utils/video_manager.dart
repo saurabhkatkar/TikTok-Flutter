@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:tiktok_flutter/models/video.dart';
 import 'package:tiktok_flutter/screens/home.dart';
@@ -7,6 +10,7 @@ class VideoManager {
   State<Home> state;
   Function updateController;
   List<int> streamQ = [0, 1, 2];
+  int prev = 0;
 
   List<Video> listVideos;
 
@@ -29,10 +33,12 @@ class VideoManager {
     streamQ = [prv, index, next];
 
     print("Preivous index next is :  $prv  $index $next");
-    listVideos[prv]?.controller?.pause();
-    listVideos[next]?.controller?.pause();
+    pauseVideo(prv);
+    pauseVideo(next);
 
     await loadVideo(index);
+    // loadVideo(prv);
+    // loadVideo(next);
 
     listVideos[index].controller.play();
     stream.add(listVideos);
@@ -60,8 +66,22 @@ class VideoManager {
 
   loadVideo(index) async {
     if (listVideos[index].controller == null) {
+      if (listVideos[index].path == null) {
+        final RegExp regExp = RegExp('([^?/]*\.(.mp4))');
+        final String fileName = regExp.stringMatch(listVideos[index].url);
+        print("FileName is : $fileName and Url is ${listVideos[index].url}");
+        final Directory tempDir = Directory.systemTemp;
+        final File file = File('${tempDir.path}/$fileName');
+
+        final StorageReference ref =
+            FirebaseStorage.instance.ref().child(fileName);
+        final StorageFileDownloadTask downloadTask = ref.writeToFile(file);
+        final int byteNumber = (await downloadTask.future).totalByteCount;
+        print(byteNumber);
+        listVideos[index].path = file.path;
+      }
       listVideos[index].controller =
-          await createController(listVideos[index].url);
+          await createController(listVideos[index].path);
       stream.add(listVideos);
     }
   }
@@ -76,7 +96,7 @@ class VideoManager {
   }
 
   Future<VideoPlayerController> createController(url) async {
-    VideoPlayerController controller = VideoPlayerController.network(url);
+    VideoPlayerController controller = VideoPlayerController.file(File(url));
     await controller.initialize();
     controller.setLooping(true);
     return controller;

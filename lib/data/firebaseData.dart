@@ -4,23 +4,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 Future<List<Video>> getVideoListForUser(String userId) async {
   var videoList = <Video>[];
 
-  var videos = await Firestore.instance
+  var videos = await FirebaseFirestore.instance
       .collection("Videos")
-      .document("AllVideos")
+      .doc("AllVideos")
       .collection("VideoList")
-      .getDocuments();
+      .get();
 
-  videos.documents.forEach((element) {
-    Video video = Video.fromJson(element.data);
+  videos.docs.forEach((element) {
+    Video video = Video.fromJson(element.data());
     videoList.add(video);
   });
 
-  var userData = await Firestore.instance
+  var userData = await FirebaseFirestore.instance
       .collection("Users")
       .where("username", isEqualTo: userId)
-      .getDocuments();
+      .get();
 
-  var videosViewed = userData.documents[0].data['videosViewed'];
+  var videosViewed = userData.docs[0].data()['videosViewed'];
 
   Map<String, bool> videosV = Map();
 
@@ -40,20 +40,20 @@ Future<List<Video>> getVideoListForUser(String userId) async {
 }
 
 Future<bool> removeVideosFromFeed(String userId, List<String> videoIds) async {
-  await Firestore.instance
+  await FirebaseFirestore.instance
       .collection('Users')
-      .document(userId)
-      .updateData({"videosViewed": FieldValue.arrayUnion(videoIds)});
+      .doc(userId)
+      .update({"videosViewed": FieldValue.arrayUnion(videoIds)});
   return true;
 }
 
 Future<bool> clearHistory(String userId) async {
   var user =
-      await Firestore.instance.collection('Users').document(userId).get();
-  var listToRemove = user.data['videosViewed'];
-  await Firestore.instance
+      await FirebaseFirestore.instance.collection('Users').doc(userId).get();
+  var listToRemove = user.data()['videosViewed'];
+  await FirebaseFirestore.instance
       .collection('Users')
-      .document(userId)
-      .updateData({"videosViewed": FieldValue.arrayRemove(listToRemove)});
+      .doc(userId)
+      .update({"videosViewed": FieldValue.arrayRemove(listToRemove)});
   return true;
 }

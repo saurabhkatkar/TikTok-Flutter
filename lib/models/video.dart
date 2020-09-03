@@ -9,10 +9,12 @@ class Video {
   String likes;
   String comments;
   String url;
+  String path;
 
   VideoPlayerController controller;
 
-  Video({this.id,
+  Video(
+      {this.id,
       this.user,
       this.userPic,
       this.videoTitle,
@@ -21,7 +23,7 @@ class Video {
       this.comments,
       this.url});
 
-  Video.fromJson(Map<dynamic, dynamic> json) {
+  Video.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     user = json['user'];
     userPic = json['user_pic'];
@@ -45,10 +47,10 @@ class Video {
     return data;
   }
 
-  setupVideo(){
+  setupVideo() {
     controller = VideoPlayerController.network(url)
-    ..initialize().then((_) {
-      controller.setLooping(true);
-    });
+      ..initialize().then((_) {
+        controller.setLooping(true);
+      });
   }
 }

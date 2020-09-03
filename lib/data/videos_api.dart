@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:tiktok_flutter/models/video.dart';
 
 import 'demo_data.dart';
@@ -6,18 +7,20 @@ import 'demo_data.dart';
 class VideosAPI {
   VideosAPI();
 
-  Future<List<Video>> getVideoListForUser(String userId) async {
-    var data = await Firestore.instance.collection("Videos").getDocuments();
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    if (data.documents.length == 0) {
+  Future<List<Video>> getVideoListForUser(String userId) async {
+    var data = await firestore.collection("Videos").get();
+
+    if (data.docs.length == 0) {
       await addDemoData();
     }
 
     var videoList = <Video>[];
-    var videos = await Firestore.instance.collection("Videos").getDocuments();
+    var videos = await firestore.collection("Videos").get();
 
-    videos.documents.forEach((element) {
-      Video video = Video.fromJson(element.data);
+    videos.docs.forEach((element) {
+      Video video = Video.fromJson(element.data());
       videoList.add(video);
     });
 
@@ -26,28 +29,27 @@ class VideosAPI {
 
   Future<Null> addDemoData() async {
     for (var video in data) {
-      await Firestore.instance.collection("Videos").add(video);
+      await firestore.collection("Videos").add(video);
     }
   }
 
   //Working in User System
   Future<bool> removeVideosFromFeed(
       String userId, List<String> videoIds) async {
-    await Firestore.instance
+    await firestore
         .collection('Users')
-        .document(userId)
-        .updateData({"videosViewed": FieldValue.arrayUnion(videoIds)});
+        .doc(userId)
+        .update({"videosViewed": FieldValue.arrayUnion(videoIds)});
     return true;
   }
 
   Future<bool> clearHistory(String userId) async {
-    var user =
-        await Firestore.instance.collection('Users').document(userId).get();
-    var listToRemove = user.data['videosViewed'];
-    await Firestore.instance
+    var user = await firestore.collection('Users').doc(userId).get();
+    var listToRemove = user.data()['videosViewed'];
+    await firestore
         .collection('Users')
-        .document(userId)
-        .updateData({"videosViewed": FieldValue.arrayRemove(listToRemove)});
+        .doc(userId)
+        .update({"videosViewed": FieldValue.arrayRemove(listToRemove)});
     return true;
   }
 }
