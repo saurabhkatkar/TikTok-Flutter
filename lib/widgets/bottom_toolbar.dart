@@ -4,14 +4,14 @@ import 'package:tiktok_flutter/utils/tik_tok_icons_icons.dart';
 class BottomToolbar extends StatelessWidget {
   static const double NavigationIconSize = 20.0;
   static const double CreateButtonWidth = 38.0;
+  final Function getScreenByType;
 
-  final Function deleteHistory;
-
-  BottomToolbar(this.deleteHistory);
+  BottomToolbar({this.getScreenByType});
 
   Widget get customCreateIcon => Container(
       width: 45.0,
       height: 27.0,
+      margin: EdgeInsets.only(bottom: 10.0),
       child: Stack(children: [
         Container(
             margin: EdgeInsets.only(left: 10.0),
@@ -40,44 +40,41 @@ class BottomToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        SizedBox(
-          height: 1,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        menuButton(
+          'Home',
+          Icon(TikTokIcons.home, color: Colors.white, size: NavigationIconSize),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            menuButton(
-                'Home',
-                Icon(TikTokIcons.home,
-                    color: Colors.white, size: NavigationIconSize)),
-            menuButton(
-                'Search',
-                Icon(TikTokIcons.search,
-                    color: Colors.white, size: NavigationIconSize)),
-            customCreateIcon,
-            menuButton(
-                'Messages',
-                Icon(TikTokIcons.messages,
-                    color: Colors.white, size: NavigationIconSize)),
-            menuButton(
-                'Profile',
-                Icon(TikTokIcons.profile,
-                    color: Colors.white, size: NavigationIconSize))
-          ],
+        menuButton(
+          'Search',
+          Icon(TikTokIcons.search,
+              color: Colors.white, size: NavigationIconSize),
         ),
-        SizedBox(
-          height: 10,
-        )
+        customCreateIcon,
+        menuButton(
+          'Messages',
+          Icon(TikTokIcons.messages,
+              color: Colors.white, size: NavigationIconSize),
+        ),
+        menuButton(
+          'Profile',
+          Icon(TikTokIcons.profile,
+              color: Colors.white, size: NavigationIconSize),
+        ),
       ],
     );
   }
 
   Widget menuButton(String text, Widget icon) {
     return GestureDetector(
-        onTap: () => {deleteHistory()},
+        onTap: () {
+          getScreenByType(text);
+        },
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             icon,
             SizedBox(

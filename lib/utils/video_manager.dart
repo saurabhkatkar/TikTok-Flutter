@@ -1,13 +1,10 @@
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:tiktok_flutter/models/video.dart';
-import 'package:tiktok_flutter/screens/home.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoManager {
-  State<Home> state;
   Function updateController;
   List<int> streamQ = [0, 1, 2];
   int prev = 0;

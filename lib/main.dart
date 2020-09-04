@@ -1,10 +1,10 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:tiktok_flutter/data/videos_api.dart';
-import 'package:tiktok_flutter/screens/home.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'bloc/videos.bloc.dart';
+import 'screens/InitialScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +30,7 @@ class Main extends StatelessWidget {
                 .textTheme
                 .apply(bodyColor: Colors.white, displayColor: Colors.white),
           ),
-          home: Home(),
+          home: InitialScreen(),
         ));
   }
 }
