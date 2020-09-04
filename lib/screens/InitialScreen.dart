@@ -13,34 +13,20 @@ class InitialScreen extends StatefulWidget {
 }
 
 class _InitialScreenState extends State<InitialScreen> {
-  Widget middleScreen = HomeScreen();
   @override
   void initState() {
     super.initState();
   }
 
-  Widget get topSection => Container(
-        height: 100.0,
-        padding: EdgeInsets.only(bottom: 15.0),
-        alignment: Alignment(0.0, 1.0),
-        child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text('Following'),
-              Container(
-                width: 15.0,
-              ),
-              Text('For you',
-                  style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold))
-            ]),
-      );
+  Widget _topSection = TopSection();
+
+  Widget _middleScreen = HomeScreen();
 
   Widget screenUI() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        topSection,
+        _topSection,
         BottomAppBar(
           elevation: 0,
           color: Colors.transparent,
@@ -55,22 +41,31 @@ class _InitialScreenState extends State<InitialScreen> {
   void getScreenByType(String type) {
     switch (type) {
       case 'Home':
-        middleScreen = HomeScreen();
+        _topSection = TopSection();
+
+        _middleScreen = HomeScreen();
         break;
       case 'Search':
-        middleScreen = Container();
+        _topSection = Container();
+        _middleScreen = Container();
 
         break;
       case 'Messages':
-        middleScreen = Container();
+        _topSection = Container();
+
+        _middleScreen = Container();
 
         break;
       case 'Profile':
-        middleScreen = ProfileScreen();
+        _topSection = Container();
+
+        _middleScreen = ProfileScreen();
 
         break;
       default:
-        middleScreen = Container();
+        _topSection = Container();
+
+        _middleScreen = Container();
     }
     setState(() {});
   }
@@ -79,12 +74,34 @@ class _InitialScreenState extends State<InitialScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(children: <Widget>[middleScreen, screenUI()]),
+      body: Stack(children: <Widget>[_middleScreen, screenUI()]),
     );
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+}
+
+class TopSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 100.0,
+      padding: EdgeInsets.only(bottom: 15.0),
+      alignment: Alignment(0.0, 1.0),
+      child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text('Following'),
+            Container(
+              width: 15.0,
+            ),
+            Text('For you',
+                style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold))
+          ]),
+    );
   }
 }
