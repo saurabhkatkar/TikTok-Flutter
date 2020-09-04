@@ -38,9 +38,9 @@ class VideoManager {
 
     await loadVideo(index);
     // loadVideo(prv);
-    // loadVideo(next);
+    loadVideo(next);
 
-    listVideos[index].controller.play();
+    listVideos[index].controller?.play();
     stream.add(listVideos);
   }
 
@@ -67,6 +67,10 @@ class VideoManager {
   loadVideo(index) async {
     if (listVideos[index].controller == null) {
       if (listVideos[index].path == null) {
+        listVideos[index].controller =
+            await createController(listVideos[index].url, path: false);
+        stream.add(listVideos);
+
         final RegExp regExp = RegExp('([^?/]*\.(.mp4))');
         final String fileName = regExp.stringMatch(listVideos[index].url);
         print("FileName is : $fileName and Url is ${listVideos[index].url}");
@@ -79,10 +83,11 @@ class VideoManager {
         final int byteNumber = (await downloadTask.future).totalByteCount;
         print(byteNumber);
         listVideos[index].path = file.path;
+      } else {
+        listVideos[index].controller =
+            await createController(listVideos[index].path);
+        stream.add(listVideos);
       }
-      listVideos[index].controller =
-          await createController(listVideos[index].path);
-      stream.add(listVideos);
     }
   }
 
@@ -95,7 +100,13 @@ class VideoManager {
     }
   }
 
-  Future<VideoPlayerController> createController(url) async {
+  Future<VideoPlayerController> createController(url, {bool path: true}) async {
+    if (!path) {
+      VideoPlayerController controller = VideoPlayerController.network(url);
+      await controller.initialize();
+      controller.setLooping(true);
+      return controller;
+    }
     VideoPlayerController controller = VideoPlayerController.file(File(url));
     await controller.initialize();
     controller.setLooping(true);
